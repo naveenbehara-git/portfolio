@@ -36,7 +36,7 @@
 
     private void HandleLogin()
     {
-        if (loginModel.Username == "admin" && loginModel.SecretKey == "Master#1")
+        if (loginModel.Username == "test_user" && loginModel.SecretKey == "User#1")
             NavigationManager.NavigateTo("/profile");
         else
             errorMessage = "Invalid credentials..!";
