@@ -26,7 +26,7 @@ namespace MyPortfolio.Components.Pages
                 Languages = "English,Telugu,Hindi",
                 Education = new List<Education>
                 {
-                    new Education(){ InstitutionName = "IIIT Nuzvid", CGPA = 7.5M, Specification = "B.Tech Electronics & Communications Engineering", Address = "Nuzvid, Eluru" },
+                    new Education(){ InstitutionName = "IIIT Nuzvid", CGPA = 6.7M, Specification = "B.Tech Electronics & Communications Engineering", Address = "Nuzvid, Eluru" },
                     new Education(){ InstitutionName = "IIIT Nuzvid", CGPA = 7.35M, Specification = "PUC (XII)", Address = "Nuzvid, Eluru" },
                     new Education(){ InstitutionName = "ZPH School", CGPA = 9.8M, Specification = "SSC", Address = "Srikakulam" },
                 },
