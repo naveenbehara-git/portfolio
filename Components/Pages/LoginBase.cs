@@ -19,13 +19,12 @@ namespace MyPortfolio.Components.Pages
         [Inject]
         public IUserAuthClient userClient { get; set; }
 
-
-        public void HandleLogin()
+        public async Task HandleLogin()
         {
             if (loginModel.Username != null && loginModel.SecretKey != null)
             {
-                var login = userClient.Login(new LoginRequest() {UserName = loginModel.Username,Password = loginModel.SecretKey, OrgId = 1 });
-                if (login != null && !string.IsNullOrEmpty(login.Result.AccessToken) && !string.IsNullOrEmpty(login.Result.RefreshToken))
+                var login = await userClient.Login(new LoginRequest() {UserName = loginModel.Username,Password = loginModel.SecretKey, OrgId = 1 });
+                if (login != null && !string.IsNullOrEmpty(login.accessToken) && !string.IsNullOrEmpty(login.refreshToken))
                 {
                     NavigationManager.NavigateTo("/profile");
                 }

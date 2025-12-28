@@ -8,8 +8,8 @@ namespace MyPortfolio.Model.DTOs
 {
     public class LoginResponse
     {
-        public string AccessToken { get; set; }
-        public string RefreshToken { get; set; }
-        public string UserName { get; set; }
+        public string accessToken { get; set; }
+        public string refreshToken { get; set; }
+        public string userName { get; set; }
     }
 }

@@ -18,16 +18,16 @@ namespace MyPortfolio.Services
             try
             {
                 var response = await _client.PostAsJsonAsync("user/login", request);
-                var json = await response.Content.ReadAsStringAsync();
+                //var json = response.Content.ReadAsStringAsync();
                 if (response != null)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<LoginResponse>(content);
+                    LoginResponse result = JsonSerializer.Deserialize<LoginResponse>(content);
                     return result;
                 }
                 return null;
             }
-            catch(Exception ex) { return ex; }
+            catch(Exception ex) { return null; }
         }
     }
 }
