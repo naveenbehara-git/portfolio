@@ -1,0 +1,364 @@
+﻿@page "/register"
+
+@using Microsoft.AspNetCore.Components
+@using System.ComponentModel.DataAnnotations
+@using MyPortfolio.Model
+@using MyPortfolio.Model.DTOs
+@using MyPortfolio.Model.Enums
+@using MyPortfolio.Services
+
+@inject NavigationManager Navigation
+@inject ICandidateService CandidateService
+@inject IUserAuthClient authService
+
+<div class="registration-container">
+    <div class="registration-card">
+        <h1>Create Your Account</h1>
+        <p class="subtitle">Complete your profile information</p>
+
+        <EditForm Model="@registrationModel" OnValidSubmit="@HandleRegister">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="validation-summary" />
+
+            <!-- Section: Basic Information -->
+            <div class="form-section">
+                <h5 class="section-title">Personal Information</h5>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name <span class="required">*</span></label>
+                        <InputText id="firstName"
+                                   class="form-control"
+                                   placeholder="Enter your first name"
+                                   @bind-Value="registrationModel.firstName" />
+                        <ValidationMessage For="@(() => registrationModel.firstName)" class="text-danger" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last Name <span class="required">*</span></label>
+                        <InputText id="lastName"
+                                   class="form-control"
+                                   placeholder="Enter your last name"
+                                   @bind-Value="registrationModel.lastName" />
+                        <ValidationMessage For="@(() => registrationModel.lastName)" class="text-danger" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email <span class="required">*</span></label>
+                        <InputText id="email"
+                                   type="email"
+                                   class="form-control"
+                                   placeholder="Enter your email"
+                                   @bind-Value="registrationModel.email" />
+                        <ValidationMessage For="@(() => registrationModel.email)" class="text-danger" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number <span class="required">*</span></label>
+                        <InputText id="phoneNumber"
+                                   type="tel"
+                                   class="form-control"
+                                   placeholder="Enter your phone number"
+                                   @bind-Value="registrationModel.phoneNumber" />
+                        <ValidationMessage For="@(() => registrationModel.phoneNumber)" class="text-danger" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth <span class="required">*</span></label>
+                        <InputDate id="dateOfBirth"
+                                   class="form-control"
+                                   @bind-Value="registrationModel.dateOfBirth" />
+                        <ValidationMessage For="@(() => registrationModel.dateOfBirth)" class="text-danger" />
+                    </div>
+
+                    <div class="form-group">
+    <label>Gender <span class="required">*</span></label>
+    <div class="radio-group">
+        <div class="radio-option">
+            <input type="radio" id="genderMale" name="gender"
+                   value="@((int)Gender.Male)"
+                   @onchange="@((ChangeEventArgs e) => registrationModel.gender = Convert.ToInt32(e.Value))"
+                   checked="@(registrationModel.gender == (int)Gender.Male)" />
+            <label for="genderMale" class="radio-label">Male</label>
+        </div>
+        <div class="radio-option">
+            <input type="radio" id="genderFemale" name="gender"
+                   value="@((int)Gender.Female)"
+                   @onchange="@((ChangeEventArgs e) => registrationModel.gender = Convert.ToInt32(e.Value))"
+                   checked="@(registrationModel.gender == (int)Gender.Female)" />
+            <label for="genderFemale" class="radio-label">Female</label>
+        </div>
+        <div class="radio-option">
+            <input type="radio" id="genderOther" name="gender"
+                   value="@((int)Gender.Other)"
+                   @onchange="@((ChangeEventArgs e) => registrationModel.gender = Convert.ToInt32(e.Value))"
+                   checked="@(registrationModel.gender == (int)Gender.Other)" />
+            <label for="genderOther" class="radio-label">Other</label>
+        </div>
+    </div>
+    <ValidationMessage For="@(() => registrationModel.gender)" class="text-danger" />
+</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="maritalStatus">Marital Status <span class="required">*</span></label>
+                        <InputSelect id="maritalStatus"
+                                     class="form-control"
+                                     @bind-Value="registrationModel.maritalStatus">
+                            <option value="">-- Select Status --</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Divorced">Divorced</option>
+                            <option value="Widowed">Widowed</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => registrationModel.maritalStatus)" class="text-danger" />
+                    </div>
+                </div>
+            </div>
+
+            @* <!-- Section: Address Information -->
+            <div class="form-section">
+                <h5 class="section-title">Address Information</h5>
+
+                <div class="form-group">
+                    <label for="currentAddress">Current Address</label>
+                    <InputTextArea id="currentAddress"
+                                   class="form-control"
+                                   placeholder="Enter your current address"
+                                   rows="3"
+                                   @bind-Value="registrationModel.CurrentAddress" />
+                    <ValidationMessage For="@(() => registrationModel.CurrentAddress)" class="text-danger" />
+                </div>
+
+                <div class="form-group">
+                    <label for="temporaryAddress">Temporary Address</label>
+                    <InputTextArea id="temporaryAddress"
+                                   class="form-control"
+                                   placeholder="Enter your temporary address"
+                                   rows="3"
+                                   @bind-Value="registrationModel.TemporaryAddress" />
+                    <ValidationMessage For="@(() => registrationModel.TemporaryAddress)" class="text-danger" />
+                </div>
+            </div> *@
+
+            <!-- Section: Professional Information -->
+            <div class="form-section">
+                <h5 class="section-title">Professional Information</h5>
+
+                <div class="form-group">
+                    <label for="careerObjective">Career Objective</label>
+                    <InputTextArea id="careerObjective"
+                                   class="form-control"
+                                   placeholder="Enter your career objective"
+                                   rows="4"
+                                   @bind-Value="registrationModel.careerObjective" />
+                    <small class="form-text">Maximum 500 characters</small>
+                    <ValidationMessage For="@(() => registrationModel.careerObjective)" class="text-danger" />
+                </div>
+
+                <div class="form-group">
+                    <label for="certifications">Certifications</label>
+                    <InputTextArea id="certifications"
+                                   class="form-control"
+                                   placeholder="Enter your certifications (comma-separated)"
+                                   rows="3"
+                                   @bind-Value="registrationModel.certifications" />
+                </div>
+            </div>
+
+            <!-- Section: Account Security -->
+            <div class="form-section">
+                <h5 class="section-title">Account Security</h5>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password <span class="required">*</span></label>
+                        <InputText id="password"
+                                   type="password"
+                                   class="form-control"
+                                   placeholder="Enter your password (min 8 characters)"
+                                   @bind-Value="registrationModel.password" />
+                        <ValidationMessage For="@(() => registrationModel.password)" class="text-danger" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                        <InputText id="confirmPassword"
+                                   type="password"
+                                   class="form-control"
+                                   placeholder="Confirm your password"
+                                   @bind-Value="registrationModel.confirmPassword" />
+                        <ValidationMessage For="@(() => registrationModel.confirmPassword)" class="text-danger" />
+                    </div>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <InputCheckbox id="termsAccepted" @bind-Value="registrationModel.termsAccepted" />
+                    <label for="termsAccepted">I agree to the Terms and Conditions <span class="required">*</span></label>
+                    <ValidationMessage For="@(() => registrationModel.termsAccepted)" class="text-danger" />
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error:</strong> @errorMessage
+                    <button type="button" class="btn-close" @onclick="@(() => errorMessage = string.Empty)"></button>
+                </div>
+            }
+
+            @if (isLoading)
+            {
+                <button type="button" class="btn btn-primary w-100" disabled>
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Registering...
+                </button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-primary w-100">Create Account</button>
+            }
+        </EditForm>
+
+        <div class="login-link">
+            <p>Already have an account? <a href="/login">Login here</a></p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RegistrationModel registrationModel = new();
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+    private Guid currentUserId = Guid.NewGuid(); // TODO: Get from auth context
+
+    private async Task HandleRegister()
+    {
+        errorMessage = string.Empty;
+        isLoading = true;
+
+        try
+        {
+            // Validation
+            if (registrationModel.password != registrationModel.confirmPassword)
+            {
+                errorMessage = "Passwords do not match.";
+                return;
+            }
+
+            var age = DateTime.Today.Year - registrationModel.dateOfBirth.Year;
+            if (registrationModel.dateOfBirth.Date > DateTime.Today.AddYears(-age))
+                age--;
+
+            if (age < 18)
+            {
+                errorMessage = "You must be at least 18 years old to register.";
+                return;
+            }
+
+            // Map to Candidate model
+            var candidate = new Candidate
+            {
+                userId = Guid.NewGuid(),
+                firstName = registrationModel.firstName,
+                lastName = registrationModel.lastName,
+                email = registrationModel.email,
+                phoneNumber = registrationModel.phoneNumber,
+                gender = (MyPortfolio.Model.Enums.Gender)Enum.Parse(typeof(MyPortfolio.Model.Enums.Gender), registrationModel.gender.ToString()),
+                dob = registrationModel.dateOfBirth,
+                maritalStatus = registrationModel.maritalStatus,
+                careerObjective = registrationModel.careerObjective,
+                certifications = registrationModel.certifications,
+                address = new List<Address>(),
+                experiences = new List<WorkExperience>(),
+                educations = new List<Education>(),
+                skills = new List<Skill>(),
+                languages = new List<Language>(),
+                createdAt = DateTime.UtcNow,
+                updatedAt = DateTime.UtcNow
+            };
+
+
+
+            // Call service to save
+            var request = new LoginRequest
+            {
+                UserName = registrationModel.firstName + "_" + registrationModel.lastName,
+                Password = registrationModel.password,
+                OrgId = 1
+            };
+            var Securityresult = await authService.AddUser(request);
+            candidate.userId = Securityresult.userId;
+            var result = await CandidateService.AddCandidateProfile(candidate);
+            
+            if (result != null && result.statusCode == 200 && Securityresult != null)
+            {
+                // Navigate to profile
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = result?.statusMessage ?? "Registration failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Registration failed: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    public class RegistrationModel
+    {
+        [Required(ErrorMessage = "First name is required")]
+        [StringLength(50, ErrorMessage = "First name must be less than 50 characters")]
+        public string firstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Last name is required")]
+        [StringLength(50, ErrorMessage = "Last name must be less than 50 characters")]
+        public string lastName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Phone number is required")]
+        [Phone(ErrorMessage = "Invalid phone number format")]
+        [StringLength(15, MinimumLength = 10, ErrorMessage = "Phone number must be between 10 and 15 characters")]
+        public string phoneNumber { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Date of birth is required")]
+        public DateTime dateOfBirth { get; set; } = DateTime.Today.AddYears(-25);
+
+        [Required(ErrorMessage = "Gender is required")]
+        public int gender { get; set; } = 0;
+
+        [Required(ErrorMessage = "Marital status is required")]
+        public string maritalStatus { get; set; } = string.Empty;
+
+
+        [StringLength(500, ErrorMessage = "Career objective must be less than 500 characters")]
+        public string careerObjective { get; set; } = string.Empty;
+
+        [StringLength(500, ErrorMessage = "Certifications must be less than 500 characters")]
+        public string certifications { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Password is required")]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be between 8 and 100 characters")]
+        public string password { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Please confirm your password")]
+        public string confirmPassword { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "You must accept the terms and conditions")]
+        public bool termsAccepted { get; set; } = false;
+    }
+}

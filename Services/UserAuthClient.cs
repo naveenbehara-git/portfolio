@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace MyPortfolio.Services
 {
-    public class UserAuthClient : IUserAuthClient
+    public class UserAuthClient : IUserAuthClient   
     {
         private readonly HttpClient _client;
         public UserAuthClient(HttpClient client)
@@ -28,6 +28,23 @@ namespace MyPortfolio.Services
                 return null;
             }
             catch(Exception ex) { return null; }
+        }
+
+        public async Task<RegisterResponse> AddUser(LoginRequest request)
+        {
+            try
+            {
+                var response = await _client.PostAsJsonAsync("user/add", request);
+                var json = response.Content.ReadAsStringAsync();
+                if (response != null)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<RegisterResponse>(content);
+                    return result;
+                }
+                return null;
+            }
+            catch (Exception ex) { return null; }
         }
     }
 }

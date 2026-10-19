@@ -10,5 +10,6 @@ namespace MyPortfolio.Services
     public interface IUserAuthClient
     {
         public Task<LoginResponse> Login(LoginRequest request);
+        public Task<RegisterResponse> AddUser(LoginRequest request);
     }
 }

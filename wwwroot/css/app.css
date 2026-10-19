@@ -1,4 +1,4 @@
-﻿/*#if (SampleContent)*/
+﻿
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -86,3 +86,110 @@ h1:focus {
         padding-left: env(safe-area-inset-left);
     }
 }
+.projects-container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 40px 20px;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+
+.page-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+/* Grid */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+/* Card */
+.project-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+    .project-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 35px rgba(0,0,0,0.12);
+    }
+
+/* Image */
+.project-image img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background: #f1f1f1;
+}
+
+/* Content */
+.project-content {
+    padding: 20px;
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+    .project-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+    }
+
+.project-type {
+    background: #4a90e2;
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.project-description {
+    font-size: 0.95rem;
+    color: #444;
+    margin-bottom: 15px;
+}
+
+.tech-stack {
+    margin-bottom: 15px;
+}
+
+.tech-badge {
+    display: inline-block;
+    background: #f2f2f2;
+    padding: 6px 10px;
+    margin: 4px 4px 0 0;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+/* Actions */
+.project-actions {
+    display: flex;
+    gap: 15px;
+}
+
+    .project-actions a {
+        color: #4a90e2;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+        .project-actions a:hover {
+            text-decoration: underline;
+        }
+

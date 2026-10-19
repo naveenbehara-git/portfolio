@@ -26,7 +26,7 @@ namespace MyPortfolio.Components.Pages
                 var login = await userClient.Login(new LoginRequest() {UserName = loginModel.Username,Password = loginModel.SecretKey, OrgId = 1 });
                 if (login != null && !string.IsNullOrEmpty(login.accessToken) && !string.IsNullOrEmpty(login.refreshToken))
                 {
-                    NavigationManager.NavigateTo("/profile");
+                    NavigationManager.NavigateTo($"/profile/{login.userId}");
                 }
                 else
                 {

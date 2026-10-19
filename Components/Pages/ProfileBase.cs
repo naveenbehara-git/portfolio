@@ -1,58 +1,212 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MyPortfolio.Model;
+using MyPortfolio.Services;
+using Microsoft.AspNetCore.Components.Forms;
+using System.IO;
 
-namespace MyPortfolio.Components.Pages
+public class ProfileBase : ComponentBase
 {
-    public class ProfileBase : ComponentBase
+    [Inject]
+    public ICandidateService candidateService { get; set; } = null!;
+    [Parameter]
+    public string? userId { get; set; }
+
+    public Candidate profileModel { get; set; } = new Candidate();
+    public Candidate? editModel { get; set; }
+
+    public bool _loaded = false;
+    public bool showEditModal = false;
+    public bool isSaving = false;
+    public string? saveMessage;
+    private const long MaxProfileImageSize = 5 * 1024 * 1024;
+
+    public string? imageUploadError { get; set; }
+
+    protected override async Task OnParametersSetAsync()
     {
-        public UserProfile profileModel { get; set; }
-        protected override async Task OnInitializedAsync()
+        if (!Guid.TryParse(userId, out var candidateId))
         {
-            profileModel = new UserProfile()
-            {
-                FullName = "Naveen Behara",
-                Email = "naveenbehara07@gmail.com",
-                PhoneNumber = "+91 7997404583",
-                CareerGoal = "Proactive .NET Developer with 3+ years of experience building enterprise-grade applications in .NET Core, MVC, and Web API, Angular, and MS SQL Server. Experienced in modern software practicesincluding Agile methodology, microservices, cloud deployment (Azure), and DevOps pipelines.Recognized for problem-solving skills, attention to detail, and ability to quickly adapt to industry’snew technologies to deliver impactful business solution. Strong experience in building, testing, anddeploying applications with a focus on scalability, performance, and security.",
-                Gender = "Male",
-                DateOfBirth = "18 May 2000",
-                CurrentAddress = "60 feet road, Ayyappa society, Madhapur",
-                City = "Hyderabad",
-                State = "Telangana",
-                Country = "India",
-                ImagePath = @"data:image/jpeg;base64,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",
-                PermanentAddress = "1-139, Digiveedhi, Thotavada, Burja (Mandal), Srikakulam (dist), Andhra Pradesh, India 532445.",
-                MaritalStatus = "Single",
-                Languages = "English,Telugu,Hindi",
-                Education = new List<Education>
-                {
-                    new Education(){ InstitutionName = "IIIT Nuzvid", CGPA = 6.7M, Specification = "B.Tech Electronics & Communications Engineering", Address = "Nuzvid, Eluru" },
-                    new Education(){ InstitutionName = "IIIT Nuzvid", CGPA = 7.35M, Specification = "PUC (XII)", Address = "Nuzvid, Eluru" },
-                    new Education(){ InstitutionName = "ZPH School", CGPA = 9.8M, Specification = "SSC", Address = "Srikakulam" },
-                },
-                Experience = new List<WorkExperience>
-                {
-                    new WorkExperience(){EnterpriseName= "KPMG India",Role= "Asscoiate Consultant", StartDate = "May 2025", EndDate = "Nov 2025" },
-                    new WorkExperience(){EnterpriseName= "Alchemy techsol",Role= "Software Engineer", StartDate = "Jan 2024", EndDate = "May 2025" },
-                    new WorkExperience(){EnterpriseName= "Hallmark Global technologies",Role= "Trainee Software Engineer", StartDate = "June 2022", EndDate = "Jan 2024" },
-                },
-                Certifications = new List<string>
-                {
-                    "DevOps Engineering on AWS"
-                },
-                Skills = new List<Skill>()
-                {
-                    new Skill(){SkillName = ".Net MVC"},
-                    new Skill(){SkillName = ".Net Core"},
-                    new Skill(){SkillName = "Angular"},
-                    new Skill(){SkillName = "Blazor"},
-                    new Skill(){SkillName = "Azure"},
-                    new Skill(){SkillName = "AWS"},
-                    new Skill(){SkillName = "SQL"},
-                    new Skill(){SkillName = ".Net MAUI"},
-                    new Skill(){SkillName = "Kubernetes"}
-                }
-            };
+            profileModel = null!;
+            _loaded = true;
+            return;
+        }
+
+        await LoadCandidate(candidateId);
+    }
+
+    public async Task LoadCandidate(Guid candidateId)
+    {
+        _loaded = false;
+
+        try
+        {
+            profileModel = await candidateService
+                .GetCandidateProfileById(candidateId);
+        }
+        finally
+        {
+            _loaded = true;
+        }
+        StateHasChanged();
+    }
+
+    public void OpenEditModal()
+    {
+        if (profileModel == null)
+            return;
+
+        // Copy the scalar properties into a separate editing object.
+        editModel = new Candidate
+        {
+            candidateId= profileModel.candidateId,
+            firstName = profileModel.firstName,
+            lastName = profileModel.lastName,
+            email = profileModel.email,
+            phoneNumber = profileModel.phoneNumber,
+            gender = profileModel.gender,
+            dob = profileModel.dob,
+            careerObjective = profileModel.careerObjective,
+            maritalStatus = profileModel.maritalStatus,
+            userId = profileModel.userId,
+            imagePath = profileModel.imagePath ?? "",
+            address = profileModel.address ?? new List<Address>(profileModel.address),
+            experiences = profileModel.experiences ?? new List<WorkExperience>(profileModel.experiences),
+            educations = profileModel.educations ?? new List<Education>(profileModel.educations),
+            skills = profileModel.skills ?? new List<Skill>(profileModel.skills),
+            languages = profileModel.languages ?? new List<Language>(profileModel.languages),
+            updatedAt = DateTime.UtcNow,
+        };
+
+        saveMessage = null;
+        showEditModal = true;
+    }
+
+    public void CloseEditModal()
+    {
+        showEditModal = false;
+        editModel = null;
+        saveMessage = null;
+    }
+
+    public async Task SaveProfile()
+    {
+        if (editModel == null)
+            return;
+
+        isSaving = true;
+        saveMessage = null;
+
+        try
+        {
+            // Call your candidate update service here.
+            await candidateService.UpdateCandidateProfile(editModel);
+
+            if (Guid.TryParse(userId, out var candidateId))
+                await LoadCandidate(candidateId);
+
+            showEditModal = false;
+            editModel = null;
+        }
+        catch (Exception ex)
+        {
+            saveMessage = "Unable to save profile. Please try again.";
+            Console.Error.WriteLine(ex);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+    public void AddAddress() =>
+    editModel?.address.Add(new Address
+    {
+        CandidateId = profileModel.candidateId,
+        Address1 = string.Empty,
+        Address2 = string.Empty,
+        City = string.Empty,
+        State = string.Empty,
+        Country = string.Empty
+    });
+
+    public void AddExperience() =>
+        editModel?.experiences.Add(new WorkExperience
+        {
+            CandidateId = profileModel.candidateId,
+            CompanyName = string.Empty,
+            Designation = string.Empty,
+            Description = string.Empty,
+            StartDate = string.Empty,
+            EndDate = string.Empty
+        });
+
+    public void AddEducation() =>
+        editModel?.educations.Add(new Education
+        {
+            CandidateId = profileModel.candidateId,
+            InstitutionName = string.Empty,
+            Specification = string.Empty,
+            Address = string.Empty,
+            StartDate = string.Empty,
+            EndDate = string.Empty
+        });
+
+    public void AddSkill() =>
+        editModel?.skills.Add(new Skill { SkillName = string.Empty, CandidateId = profileModel.candidateId, });
+
+    public void AddLanguage() =>
+        editModel?.languages.Add(new Language { Name = string.Empty, CandidateId = profileModel.candidateId, });
+
+    private static readonly HashSet<string> AllowedImageTypes =
+    new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp"
+    };
+
+    public async Task HandleProfileImageUpload(InputFileChangeEventArgs e)
+    {
+        imageUploadError = null;
+
+        if (editModel is null)
+            return;
+
+        var file = e.File;
+
+        if (!AllowedImageTypes.Contains(file.ContentType))
+        {
+            imageUploadError = "Please upload a JPEG, PNG, GIF or WebP image.";
+            return;
+        }
+
+        if (file.Size > MaxProfileImageSize)
+        {
+            imageUploadError = "The image must be 5 MB or smaller.";
+            return;
+        }
+
+        try
+        {
+            await using var stream =
+                file.OpenReadStream(MaxProfileImageSize);
+
+            using var memoryStream = new MemoryStream();
+
+            await stream.CopyToAsync(memoryStream);
+
+            var base64 = Convert.ToBase64String(memoryStream.ToArray());
+
+            editModel.imagePath =
+                $"data:{file.ContentType};base64,{base64}";
+        }
+        catch (IOException)
+        {
+            imageUploadError = "Unable to read the selected image. Please try again.";
+        }
+        catch (InvalidOperationException)
+        {
+            imageUploadError = "Unable to process the image. Please try another file.";
         }
     }
 }

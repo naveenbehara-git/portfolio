@@ -1,166 +1,562 @@
-﻿@page "/profile"
+﻿@page "/profile/{userId}"
 @using System.ComponentModel.DataAnnotations;
 @using MyPortfolio.Model;
+@using MyPortfolio.Model.Enums;
 @using MyPortfolio.Model.Common;
 
 @inherits ProfileBase;
 
-<div class="profile-container">
-    <div class="profile-header">
-        @if (!string.IsNullOrEmpty(@profileModel.ImagePath))
-        {
-            <img src="@profileModel.ImagePath" alt="Profile Photo" class="profile-photo" />
-        }
-        else
-        {
-            <img src="default_profile.png" alt="Profile Photo" class="profile-photo" />
-        }
-        <h1>@profileModel.FullName</h1>
-        <p> ✉️ @profileModel.Email | 📞 @profileModel.PhoneNumber</p>
-    </div>
+@if (!_loaded && profileModel == null)
+{
+    <p>Loading profile...</p>
+}
+else
+{
+    <div class="profile-container">
+        <div class="profile-header">
+            @if (@profileModel?.imagePath != null)
+            {
+                <img src="@profileModel.imagePath" alt="Profile Photo" class="profile-photo" />
+            }
+            else
+            {
+                <img src="default_profile.png" alt="Profile Photo" class="profile-photo" />
+            }
+            
+            <h1>@profileModel.firstName @profileModel.lastName</h1>
+            <p> ✉️ @profileModel.email | 📞 @profileModel.phoneNumber</p>
+            <div>
+                <button class="edit-profile-btn" @onclick="OpenEditModal">
+                ✏️ Edit Profile
+                </button>
+            </div>
+        
+            <div>
+                <a href="/projects" >Projects</a>
+            </div></div>
 
-    <div class="profile-info">
-        <h2>Career Objective</h2>
-        <div>
-            <p>@profileModel.CareerGoal </p>
+        <div class="profile-info">
+            <h2>Career Objective</h2>
+            <div>
+                <p>@profileModel.careerObjective </p>
+            </div>
+        </div>
+
+        <div class="profile-info">
+            <h2>Personal Information</h2>
+            <div class="info-grid">
+                <div><strong>Gender:</strong> @profileModel.gender</div>
+                <div><strong>Date of Birth:</strong> @profileModel.dob.ToString("MM/dd/yyyy")</div>
+                <div><strong>Marital Status:</strong> @profileModel.maritalStatus</div>
+            </div>
+        </div>
+
+        <div class="profile-sections">
+            <details open>
+                <summary>🎓 Education</summary>
+                @if (profileModel.educations == null || !profileModel.educations.Any())
+                {
+                    <p>No education available.</p>
+                }
+                else
+                {
+                <ul>
+                    @foreach (var edu in profileModel.educations)
+                    {
+                        <li> @edu.Specification at @edu.InstitutionName - @edu.CGPA CGPA</li>
+                    }
+                </ul>
+                }
+            </details>
+
+            <details>
+                <summary>💼 Professional Experience</summary>
+                @if (profileModel.experiences == null || !profileModel.experiences.Any())
+                {
+                    <p>No experiences available.</p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var exp in profileModel.experiences)
+                        {
+                            <li>@exp.Designation at @exp.CompanyName @exp.StartDate - @exp.EndDate)</li>
+                        }
+                    </ul>
+                }
+            </details>
+
+            <details>
+                <summary>🛠️ Skills</summary>
+                @if (profileModel.skills == null || !profileModel.skills.Any())
+                {
+                    <p>No skills available.</p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var skill in profileModel.skills)
+                        {
+                        <li>@skill.SkillName</li>
+                        }
+                    </ul>
+                }
+            </details>
+
+            <details>
+                <summary>📜 Certifications</summary>
+                @if (profileModel.certifications == null || !profileModel.certifications.Any())
+                {
+                    <p>No certifications available.</p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var cert in profileModel.certifications.Split(", ").ToList())
+                        {
+                            <li>@cert</li>
+                        }
+                    </ul>
+                }
+            </details>
+            <details>
+                <summary> Languages</summary>
+                @if (profileModel.languages == null || !profileModel.languages.Any())
+                {
+                    <p>No languages available.</p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var lang in profileModel.languages)
+                        {
+                        <li>@lang.Name</li>
+                        }
+                    </ul>
+                }
+            </details>
         </div>
     </div>
+}
 
-    <div class="profile-info">
-        <h2>Personal Information</h2>
-        <div class="info-grid">
-            <div><strong>Gender:</strong> @profileModel.Gender</div>
-            <div><strong>Current Address:</strong> @profileModel.CurrentAddress</div>
-            <div><strong>City:</strong> @profileModel.City</div>
-            <div><strong>State:</strong> @profileModel.State</div>
-            <div><strong>Country:</strong> @profileModel.Country</div>
-            <div><strong>Date of Birth:</strong> @profileModel.DateOfBirth</div>
-            <div><strong>Marital Status:</strong> @profileModel.MaritalStatus</div>
-            <div><strong>Languages:</strong> @profileModel.Languages</div>
-            <div><strong>Permanent Address:</strong> @profileModel.PermanentAddress</div>
+
+@if (showEditModal && editModel is not null)
+{
+    <div class="modal-backdrop">
+        <div class="edit-profile-modal">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <button type="button" class="btn-close"
+                        @onclick="CloseEditModal">×</button>
+            </div>
+
+            <EditForm Model="@editModel" OnValidSubmit="@SaveProfile">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="modal-body">
+
+                    
+                    <div class="profile-image-upload">
+                        <label>Profile Image</label>
+                    
+                        @if (!string.IsNullOrWhiteSpace(editModel.imagePath))
+                        {
+                            <img src="@editModel.imagePath"
+                                 alt="Profile image preview"
+                                 class="profile-image-preview" />
+                        }
+                        else
+                        {
+                            <div class="profile-image-placeholder">
+                                No profile image selected
+                            </div>
+                        }
+                    
+                        <InputFile OnChange="HandleProfileImageUpload"
+                                   accept="image/*"
+                                   class="form-control" />
+                    
+                        <small class="text-muted">
+                            Supported formats: JPEG, PNG, GIF and WebP. Maximum size: 5 MB.
+                        </small>
+                    
+                        @if (!string.IsNullOrWhiteSpace(imageUploadError))
+                        {
+                            <p class="text-danger">@imageUploadError</p>
+                        }
+                    </div>
+
+
+                    @* Candidate details *@
+                    <section class="form-section">
+                        <h3>Personal Information</h3>
+
+                        <div class="form-grid">
+                            <div>
+                                <label>First Name</label>
+                                <InputText class="form-control"
+                                           @bind-Value="editModel.firstName" />
+                            </div>
+
+                            <div>
+                                <label>Last Name</label>
+                                <InputText class="form-control"
+                                           @bind-Value="editModel.lastName" />
+                            </div>
+
+                            <div>
+                                <label>Email</label>
+                                <InputText class="form-control"
+                                           type="email"
+                                           @bind-Value="editModel.email" />
+                            </div>
+
+                            <div>
+                                <label>Phone Number</label>
+                                <InputText class="form-control"
+                                           @bind-Value="editModel.phoneNumber" />
+                            </div>
+
+                            <div>
+                                <label>Gender</label>
+                                <InputSelect class="form-control"
+                                             @bind-Value="editModel.gender">
+                                    @foreach (var gender in Enum.GetValues<Gender>())
+                                    {
+                                        <option value="@gender">@gender</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <div>
+                                <label>Date of Birth</label>
+                                <InputDate class="form-control"
+                                           @bind-Value="editModel.dob" />
+                            </div>
+
+                            <div>
+                                <label>Marital Status</label>
+                                <InputText class="form-control"
+                                           @bind-Value="editModel.maritalStatus" />
+                            </div>
+
+                            <div>
+                                <label>Profile Image Path</label>
+                                <InputText class="form-control"
+                                           @bind-Value="editModel.imagePath" />
+                            </div>
+                        </div>
+
+                        <label>Career Objective</label>
+                        <InputTextArea class="form-control"
+                                       @bind-Value="editModel.careerObjective" />
+
+                        <label>Certifications</label>
+                        <InputTextArea class="form-control"
+                                       @bind-Value="editModel.certifications" />
+                    </section>
+
+                    @* Addresses *@
+                    <section class="form-section">
+                        <div class="section-heading">
+                            <h3>Addresses</h3>
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                    @onclick="AddAddress">+ Add Address</button>
+                        </div>
+
+                        @for (int i = 0; i < editModel.address.Count; i++)
+                        {
+                            var address = editModel.address[i];
+
+                            <div class="collection-item" @key="address">
+                                <div class="section-heading">
+                                    <h4>Address @(i + 1)</h4>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            @onclick="() => editModel.address.Remove(address)">
+                                        Remove
+                                    </button>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div>
+                                        <label>Address Type</label>
+                                        <InputSelect class="form-control"
+                                                     @bind-Value="address.AddressType">
+                                            @foreach (var type in Enum.GetValues<AddressType>())
+                                            {
+                                                <option value="@type">@type</option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+
+                                    <div>
+                                        <label>Address Line 1</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="address.Address1" />
+                                    </div>
+
+                                    <div>
+                                        <label>Address Line 2</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="address.Address2" />
+                                    </div>
+
+                                    <div>
+                                        <label>City</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="address.City" />
+                                    </div>
+
+                                    <div>
+                                        <label>State</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="address.State" />
+                                    </div>
+
+                                    <div>
+                                        <label>Country</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="address.Country" />
+                                    </div>
+
+                                    <div>
+                                        <label>Postal Code</label>
+                                        <InputNumber class="form-control"
+                                                     @bind-Value="address.PostalCode" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </section>
+
+                    @* Work experience *@
+                    <section class="form-section">
+                        <div class="section-heading">
+                            <h3>Work Experience</h3>
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                    @onclick="AddExperience">+ Add Experience</button>
+                        </div>
+
+                        @for (int i = 0; i < editModel.experiences.Count; i++)
+                        {
+                            var experience = editModel.experiences[i];
+
+                            <div class="collection-item" @key="experience">
+                                <div class="section-heading">
+                                    <h4>Experience @(i + 1)</h4>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            @onclick="() => editModel.experiences.Remove(experience)">
+                                        Remove
+                                    </button>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div>
+                                        <label>Company Name</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="experience.CompanyName" />
+                                    </div>
+
+                                    <div>
+                                        <label>Designation</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="experience.Designation" />
+                                    </div>
+
+                                    <div>
+                                        <label>Start Date</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="experience.StartDate"
+                                                   placeholder="e.g. 2022-01" />
+                                    </div>
+
+                                    <div>
+                                        <label>End Date</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="experience.EndDate"
+                                                   placeholder="e.g. 2024-06 or Present" />
+                                    </div>
+
+                                    <div>
+                                        <label>CTC</label>
+                                        <InputNumber class="form-control"
+                                                     @bind-Value="experience.CTC" />
+                                    </div>
+                                </div>
+
+                                <label>Description</label>
+                                <InputTextArea class="form-control"
+                                               @bind-Value="experience.Description" />
+                            </div>
+                        }
+                    </section>
+
+                    @* Education *@
+                    <section class="form-section">
+                        <div class="section-heading">
+                            <h3>Education</h3>
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                    @onclick="AddEducation">+ Add Education</button>
+                        </div>
+
+                        @for (int i = 0; i < editModel.educations.Count; i++)
+                        {
+                            var education = editModel.educations[i];
+
+                            <div class="collection-item" @key="education">
+                                <div class="section-heading">
+                                    <h4>Education @(i + 1)</h4>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            @onclick="() => editModel.educations.Remove(education)">
+                                        Remove
+                                    </button>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div>
+                                        <label>Institution Name</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="education.InstitutionName" />
+                                    </div>
+
+                                    <div>
+                                        <label>Specification</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="education.Specification" />
+                                    </div>
+
+                                    <div>
+                                        <label>Start Date</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="education.StartDate"
+                                                   placeholder="e.g. 2020" />
+                                    </div>
+
+                                    <div>
+                                        <label>End Date</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="education.EndDate"
+                                                   placeholder="e.g. 2024" />
+                                    </div>
+
+                                    <div>
+                                        <label>CGPA</label>
+                                        <InputNumber class="form-control"
+                                                     @bind-Value="education.CGPA" />
+                                    </div>
+
+                                    <div>
+                                        <label>Institution Address</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="education.Address" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </section>
+
+                    @* Skills *@
+                    <section class="form-section">
+                        <div class="section-heading">
+                            <h3>Skills</h3>
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                    @onclick="AddSkill">+ Add Skill</button>
+                        </div>
+
+                        @for (int i = 0; i < editModel.skills.Count; i++)
+                        {
+                            var skill = editModel.skills[i];
+
+                            <div class="collection-item" @key="skill">
+                                <div class="section-heading">
+                                    <h4>Skill @(i + 1)</h4>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            @onclick="() => editModel.skills.Remove(skill)">
+                                        Remove
+                                    </button>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div>
+                                        <label>Skill Name</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="skill.SkillName" />
+                                    </div>
+
+                                    <div>
+                                        <label>Years of Experience</label>
+                                        <InputNumber class="form-control"
+                                                     @bind-Value="skill.YearsOfExperience" />
+                                    </div>
+
+                                    <div>
+                                        <label>Proficiency</label>
+                                        <InputNumber class="form-control"
+                                                     @bind-Value="skill.Proficiency" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </section>
+
+                    @* Languages *@
+                    <section class="form-section">
+                        <div class="section-heading">
+                            <h3>Languages</h3>
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                    @onclick="AddLanguage">+ Add Language</button>
+                        </div>
+
+                        @for (int i = 0; i < editModel.languages.Count; i++)
+                        {
+                            var language = editModel.languages[i];
+
+                            <div class="collection-item" @key="language">
+                                <div class="section-heading">
+                                    <h4>Language @(i + 1)</h4>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            @onclick="() => editModel.languages.Remove(language)">
+                                        Remove
+                                    </button>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div>
+                                        <label>Language Name</label>
+                                        <InputText class="form-control"
+                                                   @bind-Value="language.Name" />
+                                    </div>
+
+                                    <div>
+                                        <label>Proficiency</label>
+                                        <InputNumber class="form-control"
+                                                     @bind-Value="language.Proficiency" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </section>
+
+                    @if (!string.IsNullOrWhiteSpace(saveMessage))
+                    {
+                        <p class="text-danger">@saveMessage</p>
+                    }
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            @onclick="CloseEditModal">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn btn-primary"
+                            disabled="@isSaving">
+                        @(isSaving ? "Saving..." : "Save Changes")
+                    </button>
+                </div>
+            </EditForm>
         </div>
     </div>
-
-    <div class="profile-sections">
-        <details open>
-            <summary>🎓 Education</summary>
-            <ul>
-                @foreach (var edu in profileModel.Education)
-                {
-                    <li> @edu.Specification at @edu.InstitutionName - @edu.CGPA CGPA</li>
-                }
-            </ul>
-        </details>
-
-        <details>
-            <summary>💼 Professional Experience</summary>
-            <ul>
-                @foreach (var exp in profileModel.Experience)
-                {
-                    <li>@exp.Role at @exp.EnterpriseName (@exp.StartDate - @exp.EndDate)</li>
-                }
-            </ul>
-        </details>
-
-        <details>
-            <summary>🛠️ Skills</summary>
-            <ul>
-                @foreach (var skill in profileModel.Skills)
-                {
-                    <li>@skill.SkillName</li>
-                }
-            </ul>
-        </details>
-
-        <details>
-            <summary>📜 Certifications</summary>
-            <ul>
-                @foreach (var cert in profileModel.Certifications)
-                {
-                    <li>@cert</li>
-                }
-            </ul>
-        </details>
-    </div>
-</div>
-
-<style>
-    .profile-container {
-        max-width: 1000px;
-        margin: auto;
-        padding: 40px;
-        font-family: Arial, sans-serif;
-        color: #333;
-    }
-
-    .profile-header {
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
-    .profile-photo {
-        width: 180px;
-        height: 180px;
-        border-radius: 50%;
-        border: 4px solid #4a90e2;
-        margin-bottom: 15px;
-        object-fit: cover;
-    }
-
-    .profile-header h1 {
-        margin: 10px 0 5px 0;
-        font-size: 2rem;
-        font-weight: bold;
-    }
-
-    .profile-header p {
-        font-size: 1rem;
-        color: #666;
-    }
-
-    .profile-info {
-        margin-bottom: 30px;
-    }
-
-    .profile-info h2 {
-        font-size: 1.5rem;
-        margin-bottom: 15px;
-        border-bottom: 2px solid #4a90e2;
-        padding-bottom: 5px;
-    }
-
-    .info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        font-size: 1rem;
-        background: #f9f9f9;
-        padding: 20px;
-        border-radius: 10px;
-    }
-
-    .profile-sections details {
-        background: #f1f1f1;
-        margin-bottom: 15px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-
-    .profile-sections summary {
-        font-size: 1.2rem;
-        font-weight: bold;
-        cursor: pointer;
-        margin-bottom: 10px;
-    }
-
-    .profile-sections ul {
-        margin: 10px 0 0 20px;
-        padding: 0;
-    }
-
-    .profile-sections li {
-        margin-bottom: 8px;
-    }
-</style>
+}
 

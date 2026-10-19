@@ -1,0 +1,144 @@
+﻿@page "/projects"
+
+<div class="projects-container">
+    <h1 class="page-title">🚀 Projects</h1>
+    <p class="page-subtitle">
+        A selection of projects showcasing my skills and hands-on experience.
+    </p>
+    <label><h3>Professional Projects</h3></label>
+    <br />
+    <div class="projects-grid">
+        @foreach (var project in Projects)
+        {
+            <div class="project-card">
+                
+                <!-- Project Image -->
+                <div class="project-image">
+                    <img src="@project.ImageUrl"
+                         alt="@project.Title"
+                         loading="lazy" />
+                </div>
+
+                <div class="project-content">
+                    <div class="project-header">
+                        <h3>@project.Title</h3>
+                        <span class="project-type">@project.Category</span>
+                    </div>
+
+                    <p class="project-description">
+                        @project.Description
+                    </p>
+
+                    <div class="tech-stack">
+                        @foreach (var tech in project.Technologies)
+                        {
+                            <span class="tech-badge">@tech</span>
+                        }
+                    </div>
+
+                    <div class="project-actions">
+                        @if (!string.IsNullOrEmpty(project.GitHubUrl))
+                        {
+                            <a href="@project.GitHubUrl" target="_blank">🔗 GitHub</a>
+                        }
+                        @if (!string.IsNullOrEmpty(project.LiveUrl))
+                        {
+                            <a href="@project.LiveUrl" target="_blank">🌐 Live Demo</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    
+    </div>
+
+    <label><h3>Personal Projects</h3></label>
+    <br />
+    <div class="projects-grid">
+        @foreach (var project in Projects)
+        {
+            <div class="project-card">
+                
+                <!-- Project Image -->
+                <div class="project-image">
+                    <img src="@project.ImageUrl"
+                         alt="@project.Title"
+                         loading="lazy" />
+                </div>
+
+                <div class="project-content">
+                    <div class="project-header">
+                        <h3>@project.Title</h3>
+                        <span class="project-type">@project.Category</span>
+                    </div>
+
+                    <p class="project-description">
+                        @project.Description
+                    </p>
+
+                    <div class="tech-stack">
+                        @foreach (var tech in project.Technologies)
+                        {
+                            <span class="tech-badge">@tech</span>
+                        }
+                    </div>
+
+                    <div class="project-actions">
+                        @if (!string.IsNullOrEmpty(project.GitHubUrl))
+                        {
+                            <a href="@project.GitHubUrl" target="_blank">🔗 GitHub</a>
+                        }
+                        @if (!string.IsNullOrEmpty(project.LiveUrl))
+                        {
+                            <a href="@project.LiveUrl" target="_blank">🌐 Live Demo</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    
+    </div>
+</div>
+
+@code {
+    private List<ProjectModel> Projects = new()
+    {
+        new ProjectModel
+        {
+            Title = "My Portfolio App",
+            Category = "MAUI Blazor",
+            Description = "A cross-platform portfolio app built with .NET MAUI Blazor.",
+            ImageUrl = "images/projects/portfolio.png",
+            Technologies = new() { ".NET MAUI", "Blazor", "C#", "CSS" },
+            GitHubUrl = "https://github.com/yourname/portfolio"
+        },
+        new ProjectModel
+        {
+            Title = "Employee Management System",
+            Category = "Web Application",
+            Description = "Role-based employee management with authentication and reporting.",
+            ImageUrl = "images/projects/ems.png",
+            Technologies = new() { "ASP.NET Core", "EF Core", "SQL Server", "JWT" },
+            GitHubUrl = "https://github.com/yourname/ems"
+        },
+        new ProjectModel
+        {
+            Title = "E-Commerce REST API",
+            Category = "Backend / API",
+            Description = "Secure REST API for products, orders, and users.",
+            ImageUrl = "images/projects/ecommerce.png",
+            Technologies = new() { "ASP.NET Core Web API", "JWT", "Swagger" }
+        }
+    };
+
+    private class ProjectModel
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+        public List<string> Technologies { get; set; } = new();
+        public string? GitHubUrl { get; set; }
+        public string? LiveUrl { get; set; }
+    }
+}
