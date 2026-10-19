@@ -11,5 +11,6 @@ namespace MyPortfolio.Model.DTOs
         public string accessToken { get; set; }
         public string refreshToken { get; set; }
         public string userName { get; set; }
+        public Guid userId { get; set; }
     }
 }
