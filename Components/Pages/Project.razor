@@ -1,7 +1,12 @@
-﻿@page "/projects"
+﻿@page "/projects/{userId}"
+
+@using Microsoft.AspNetCore.Components;
 
 <div class="projects-container">
-    <h1 class="page-title">🚀 Projects</h1>
+    <div class="row">
+        <div class="col-10"><h1 class="page-title">🚀 Projects</h1></div>
+        <div class="col-2"><a href="/profile/@userId" class="btn btn-primary">← Back to Home</a></div>    
+    </div>
     <p class="page-subtitle">
         A selection of projects showcasing my skills and hands-on experience.
     </p>
@@ -15,7 +20,7 @@
                 <!-- Project Image -->
                 <div class="project-image">
                     <img src="@project.ImageUrl"
-                         alt="@project.Title"
+                         alt="@project.Title + ' by ' + @userId"
                          loading="lazy" />
                 </div>
 
@@ -101,6 +106,9 @@
 </div>
 
 @code {
+
+    [Parameter]
+    public string? userId { get; set; }
     private List<ProjectModel> Projects = new()
     {
         new ProjectModel
@@ -130,9 +138,9 @@
             Technologies = new() { "ASP.NET Core Web API", "JWT", "Swagger" }
         }
     };
-
+    
     private class ProjectModel
-    {
+    {  
         public string Title { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;

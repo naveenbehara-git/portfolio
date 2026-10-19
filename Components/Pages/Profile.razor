@@ -1,11 +1,13 @@
 ﻿@page "/profile/{userId}"
 @using System.ComponentModel.DataAnnotations;
+@using MyPortfolio.Components.Layout
 @using MyPortfolio.Model;
 @using MyPortfolio.Model.Enums;
 @using MyPortfolio.Model.Common;
 
 @inherits ProfileBase;
 
+<NavMenu></NavMenu>
 @if (!_loaded && profileModel == null)
 {
     <p>Loading profile...</p>
@@ -13,6 +15,7 @@
 else
 {
     <div class="profile-container">
+        
         <div class="profile-header">
             @if (@profileModel?.imagePath != null)
             {
@@ -30,10 +33,7 @@ else
                 ✏️ Edit Profile
                 </button>
             </div>
-        
-            <div>
-                <a href="/projects" >Projects</a>
-            </div></div>
+             </div>
 
         <div class="profile-info">
             <h2>Career Objective</h2>
@@ -136,8 +136,11 @@ else
                 }
             </details>
         </div>
+   
     </div>
 }
+
+
 
 
 @if (showEditModal && editModel is not null)
@@ -559,4 +562,4 @@ else
         </div>
     </div>
 }
-
+}
