@@ -6,7 +6,7 @@
         <div class="navbar-container">
             <!-- Logo/Brand Section -->
             <div class="navbar-brand-section">
-                <button class="navbar-brand" @onclick="NavigateToDashboard">
+                <button class="navbar-brand">
                     <span class="brand-icon">📊</span>
                     <span class="brand-name">MyPortfolio</span>
                 </button>
@@ -19,8 +19,9 @@
             <div class="navbar-nav">
                 <div class="nav-items">
                 <div class="row">
-                    <div class="col-6">
-                    <NavLink href="/profile/{userId}" 
+                    <div class="col-1"></div>
+                    <div class="col-11">
+                    <NavLink href="/" 
                              class="nav-item" 
                              Match="NavLinkMatch.Prefix"
                              @onclick="CloseMobileMenu">

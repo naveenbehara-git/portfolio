@@ -81,6 +81,9 @@ public class ProfileBase : ComponentBase
         showEditModal = true;
     }
 
+
+    private List<ProjectModel> Projects = new List<ProjectModel>();
+
     public void CloseEditModal()
     {
         showEditModal = false;
