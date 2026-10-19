@@ -393,6 +393,7 @@
     margin: 20px 0;
     font-size: 1.1rem;
     padding: 12px 24px;
+    
 }
 
 /* Modal Overlay */
@@ -581,3 +582,133 @@
             background: #667eea;
             color: white;
         }
+/* Overlay */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 1050;
+    animation: fadeIn 0.2s ease;
+}
+
+/* Modal box */
+.modal-box {
+    background: #fff;
+    width: 100%;
+    max-width: 1100px;
+    max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.25s ease;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    flex-shrink: 0;
+}
+
+    .modal-header .page-title {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0 0.5rem;
+}
+
+    .modal-close:hover {
+        color: #111827;
+    }
+
+/* Scrollable content */
+.modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.section-heading {
+    margin: 1.5rem 0 1rem;
+}
+
+    .section-heading:first-of-type {
+        margin-top: 0;
+    }
+
+/* Cards grid (adjust to match your existing styles) */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.project-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.project-image img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+}
+
+.project-content {
+    padding: 1rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Mobile: full-screen sheet */
+@media (max-width: 576px) {
+    .modal-overlay {
+        padding: 0;
+    }
+
+    .modal-box {
+        max-height: 100vh;
+        height: 100%;
+        border-radius: 0;
+    }
+}
