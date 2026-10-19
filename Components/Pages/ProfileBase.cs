@@ -209,4 +209,61 @@ public class ProfileBase : ComponentBase
             imageUploadError = "Unable to process the image. Please try another file.";
         }
     }
+
+    public bool showProjectsModal = false;
+
+    public List<ProjectModel> ProfessionalProjects = new()
+    {
+        new ProjectModel
+        {
+            Title = "My Portfolio App",
+            Category = "MAUI Blazor",
+            Description = "A cross-platform portfolio app built with .NET MAUI Blazor.",
+            ImageUrl = "images/projects/portfolio.png",
+            Technologies = new() { ".NET MAUI", "Blazor", "C#", "CSS" },
+            GitHubUrl = "https://github.com/yourname/portfolio"
+        },
+        new ProjectModel
+        {
+            Title = "Employee Management System",
+            Category = "Web Application",
+            Description = "Role-based employee management with authentication and reporting.",
+            ImageUrl = "images/projects/ems.png",
+            Technologies = new() { "ASP.NET Core", "EF Core", "SQL Server", "JWT" },
+            GitHubUrl = "https://github.com/yourname/ems"
+        }
+    };
+
+    public List<ProjectModel> PersonalProjects = new()
+    {
+        new ProjectModel
+        {
+            Title = "E-Commerce REST API",
+            Category = "Backend / API",
+            Description = "Secure REST API for products, orders, and users.",
+            ImageUrl = "images/projects/ecommerce.png",
+            Technologies = new() { "ASP.NET Core Web API", "JWT", "Swagger" }
+        }
+    };
+
+    public void OpenProjectsModal()
+    {
+        showProjectsModal = true;
+    }
+
+    public void CloseProjectsModal()
+    {
+        showProjectsModal = false;
+    }
+
+    public class ProjectModel
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+        public List<string> Technologies { get; set; } = new();
+        public string? GitHubUrl { get; set; }
+        public string? LiveUrl { get; set; }
+    }
 }
